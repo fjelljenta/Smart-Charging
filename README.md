@@ -1,5 +1,5 @@
 # Smart-Charging
-Repository for our contribution to the Qiskit Hackathon Global 2021
+Repository for our contribution to the Qiskit Global Hackathon 2021
 
 We want to look at quantum algorithms for NP-hard problems. Due to climate change we will focus on the impactful problem of smart charging. 
 
