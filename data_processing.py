@@ -31,8 +31,9 @@ def generate_data(num_normal_vehicles, num_important_vehicles):
 
     return G
 
-G = generate_data(3,2)
-pos = nx.spring_layout(G)
-nx.draw(G, pos, with_labels=True)
-nx.draw_networkx_edge_labels(G, pos)
-plt.show()
+if __name__ == "__main__":
+    G = generate_data(3,2)
+    pos = nx.spring_layout(G)
+    nx.draw(G, pos, with_labels=True)
+    nx.draw_networkx_edge_labels(G, pos)
+    plt.show()
