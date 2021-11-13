@@ -25,7 +25,7 @@ def generate_data(num_normal_vehicles, num_important_vehicles):
         for j in range(i):
             weight_1 = round(vehicles[str(i)]["weight"]*vehicles[str(j)]["charging_time"],2)
             weight_2 = round(vehicles[str(i)]["charging_time"]*vehicles[str(j)]["weight"],2)
-            weight = min(weight_1, weight_2)
+            weight = int(min(weight_1, weight_2))
             #print(j,i,weight, weight_1, weight_2)
             G.add_edge(i,j,weight=weight)
 
