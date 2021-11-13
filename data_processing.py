@@ -3,6 +3,15 @@ import random
 import matplotlib.pyplot as plt
 
 def generate_data(num_normal_vehicles, num_important_vehicles):
+    """Generate vehicle data
+
+    Args:
+        num_normal_vehicles (int): Number of normal vehicles
+        num_important_vehicles (int): Number of priorized vehicles
+
+    Returns:
+        nx.Graph: Returns a fully connected graph with the random assigned weights
+    """
     total_number_of_vehicles = num_normal_vehicles + num_important_vehicles
     # 
     vehicles = {}
