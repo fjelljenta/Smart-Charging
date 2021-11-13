@@ -1,0 +1,17 @@
+Useful resources:
+-Main paper we follow
+	-https://arxiv.org/pdf/2012.14859.pdf
+
+-Max-k-Cut:
+	-https://qiskit.org/documentation/tutorials/optimization/6_examples_max_cut_and_tsp.html
+	-https://qiskit.org/textbook/ch-applications/qaoa.html
+		
+-MIS:
+	-https://www.osti.gov/servlets/purl/1756438
+
+-Benchmarking:
+	-https://scipbook.readthedocs.io/en/latest/graph.html
+
+-Data generation:
+	-https://www.data.gouv.fr/fr/datasets/belib-reseau-parisien-de-bornes-de-recharges-accelerees-22-kw-ac-dc-pour-vehicules-electriques/
+	-https://networkx.org/documentation/stable/tutorial.html
