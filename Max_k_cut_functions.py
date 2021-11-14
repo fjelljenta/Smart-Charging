@@ -111,6 +111,42 @@ def get_expectation(G, p, shots=512):
 
     return execute_circ
 
+
+
+
+
+def brut_force(G, k):
+    """Classical brut-force solution of the max-k-cut problem of Graph G
+    Args:
+        G (graph): Graph of the max-k-cut problem
+        k (int): Number of cuts (available loading stations)
+    Globals:
+        time (int): Used for progress output
+    Returns:
+        C_opt (int): cost function of optimal max-k-cut solution
+        P_opt (dict): dictionary with the number of the load station as keys 
+            and array of jobs at a given loading station (still unordered!) as values
+    Method: 
+        compute every posible k-cut, save the corresponding cost function 
+        and find the maximal index of the maximal cost
+    """
+    C_opt = 0
+    P_opt={'P0': [0]}
+    for i in range(1,k):
+        P_opt['P'+str(i)]=[]
+          
+    N=G.number_of_nodes()
+    N_rec=N-1
+    
+    global time
+    time=0
+    
+    C_opt, P_opt=rec_cost_optimization(G, k, N, N_rec, P_opt, C_opt)
+    print('{}\r'.format('progress '+ str(np.round(1/k**(N-7)*time*100,4))+ '%' +'   '), end="")
+    
+    return C_opt, P_opt
+
+
 def brut_force_k4_N5(G):
     """Classical brut-force solution of the max-k-cut problem of Graph G
     Args:
@@ -184,3 +220,44 @@ def cut_weight(G, P1, P2):
     weights = get_weight_matrix(G)
     w = np.sum([weights[i, j] for i in P1 for j in P2])
     return w
+
+
+def rec_cost_optimization(G, k, N, N_rec, P_opt, C_opt):
+    """Recursive part of the classical brut-force solution for arbitrary k and N
+    Args:
+        G (graph): Graph of the max-k-cut problem
+        k (int): Number of cuts (available loading stations)
+        N (int): Number of nodes of Graph G
+        N_rec(int): recursive variable, initially N_rec=N-1
+        C_opt (int): cost function of optimal max-k-cut at the current opimization step solution
+        P_opt (dict): dictionary with the number of the load station as keys and array of jobs at a given 
+                loading station (still unordered!) as values at the current opimization step solution
+    Globals:
+        time (int): Used for progress output
+    Returns:
+        C_opt (int): cost function of optimal max-k-cut solution
+        P_opt (dict): dictionary with the number of the load station as keys 
+                and array of jobs at a given loading station (still unordered!) as values
+    Method: 
+        recursive version of the for-loops in brut_force_k4_N5 for arbitrary k and N
+    """
+    if N_rec>0:
+        for globals()['PN%i' %N_rec] in range(k):
+            if N_rec==7:
+                global time
+                print('{}\r'.format('progress '+ str(np.round(1/k**(N-7)*time*100,4))+ '%' +'   '), end="") 
+                        # '  P_opt='+ P_opt+ '   C_opt='+ C_opt)
+                time+=1
+            C_opt, P_opt=rec_cost_optimization(G, k, N, N_rec-1, P_opt, C_opt)
+    else:
+        # PN0=0  # node o is always in Partition 0
+        P_try={'P0': [0]}
+        for i in range(1,k):
+            P_try['P'+str(i)]=[]
+        for j in range(1,N):
+            P_try['P' + str(eval('PN'+str(j)))].append(j)
+        C_try = cost(G, P_try)
+        if C_try > C_opt:
+            P_opt = P_try.copy()
+            C_opt = C_try
+    return C_opt, P_opt
