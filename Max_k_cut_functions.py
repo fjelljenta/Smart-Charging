@@ -148,24 +148,17 @@ def brut_force(G, k):
 
 
 def brut_force_k4_N5(G):
-    """Classical brut-force solution of the max-k-cut problem of Graph G
+    """Classical brut-force solution of the max-4-cut problem of a Graph with 5 nodes
     Args:
-        G (graph): Graph of the max-k-cut problem
-        #TODO[k (int): Number of cuts (available loading stations)]
+        G (graph): Graph with 5 nodes of the max-4-cut problem
     Returns:
-        C_opt (int): cost function of optimal max-k-cut solution
+        C_opt (int): cost function of optimal max-4-cut solution
         P_opt (dict): dictionary with the number of the load station as keys 
             and array of jobs at a given loading station (still unordered!) as values
     Method: 
-        compute every posible k-cut, save the corresponding cost function 
+        compute every posible 4-cut, save the corresponding cost function 
         and find the maximal index of the maximal cost
     """
-
-    # TODO: implement for general number od Nodes N, at the moment only version for N=5!!!!
-    # N=5
-
-    # TODO: implememnt for general k, at the moment only version for k=4!!!!
-    # k=4
 
     # TODO: at the moment only works if node names correspond to the number (int) of the node
     # jobs=list(G.nodes())
