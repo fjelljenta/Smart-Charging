@@ -1,6 +1,7 @@
 import networkx as nx
 import random
 import matplotlib.pyplot as plt
+import numpy as np
 
 def generate_data(num_normal_vehicles, num_important_vehicles):
     """Generate vehicle data
@@ -39,6 +40,22 @@ def generate_data(num_normal_vehicles, num_important_vehicles):
             G.add_edge(i,j,weight=weight)
 
     return G
+
+def get_weight_matrix(G):
+    """
+    :param G: nx.Graph: a fully connected graph with the random assigned weights
+    :return: numpy array: a matrix containing weights of edges
+    """
+    matrix = []
+    for i in range(len(G)):
+        row = []
+        for j in range(len(G)):
+            if j != i:
+                row.append(G._adj[i][j]['weight'])
+            else:
+                row.append(0)
+        matrix.append(row)
+    return np.array(matrix)
 
 if __name__ == "__main__":
     G = generate_data(3,2)
