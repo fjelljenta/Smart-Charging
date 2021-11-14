@@ -42,6 +42,46 @@ def generate_data(num_normal_vehicles, num_important_vehicles):
     # TODO store graph data (json?)
     return G
 
+def generate_data_mis(number_of_groups, number_of_vehicles, max_time, max_charging_time=360):
+    """Generate data for the MIS
+
+    Args:
+        number_of_groups (int): Number of groups
+        number_of_vehicles (int): Number of vehicles
+        max_time (int): Start time charging limit (say, after 100 minutes, every car started at least charging)
+        max_charging_time (int): maximum time a car can charge (like 6h)
+    """
+    G = nx.Graph()
+    vehicles = {}
+    edge_list = []
+    for i in range(number_of_vehicles):
+        vehicles[str(i)] = {}
+        vehicles[str(i)]["group"] = random.randint(1, number_of_groups)
+        vehicles[str(i)]["start_charging"] = random.randint(0, max_time)
+        vehicles[str(i)]["end_charging"] = random.randint(vehicles[str(i)]["start_charging"], max_charging_time+vehicles[str(i)]["start_charging"])
+    
+    G.add_nodes_from(range(number_of_vehicles))
+    for i in range(number_of_vehicles):
+        for j in range(i):
+            added_flag = False
+            if vehicles[str(i)]["group"] == vehicles[str(j)]["group"]:
+                edge_list.append((i,j))
+            if not added_flag:
+                if vehicles[str(i)]["start_charging"] <= vehicles[str(j)]["start_charging"] <= vehicles[str(i)]["end_charging"]:
+                    edge_list.append((i,j))
+                elif vehicles[str(i)]["start_charging"] <= vehicles[str(j)]["end_charging"] <= vehicles[str(i)]["end_charging"]:
+                    edge_list.append((i,j))
+                elif vehicles[str(j)]["start_charging"] <= vehicles[str(i)]["start_charging"] <= vehicles[str(j)]["end_charging"]:
+                    edge_list.append((i,j))
+                else:
+                    # No connection
+                    pass
+    
+    G.add_edges_from(edge_list)
+    print(vehicles)
+    print(edge_list)
+    return G
+
 def get_weight_matrix(G):
     """
     :param G: nx.Graph: a fully connected graph with the random assigned weights
