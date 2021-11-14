@@ -7,29 +7,31 @@ from data_processing import *
 import numpy as np
 
 
-def make_mixing_block(n, l):
+def make_mixing_block(n, l, layer):
     """
     :param n: The number of nodes
     :param l: The number of qubits representing a node
+    :param i: The subscript to be given to the variable beta, the varibale would be named to 'beta_i'
     :return: The QuantumCircuit object corresponding to the mixing block
     """
     nq = n * l
-    beta = Parameter('\u03B2')
+    globals()['beta%s' % layer] = Parameter('\u03B2' + str(layer))
     mix_circ = QuantumCircuit(nq)
     for q in range(0, nq):
-        mix_circ.rx(2 * beta, q)
+        mix_circ.rx(2 * globals()['beta%s' % layer], q)
     return mix_circ
 
 
-def make_cost_block(n, l, w):
+def make_cost_block(n, l, w, layer):
     """
     :param n: The number of nodes
     :param l: The number of qubits representing a node
     :param w: The weight matrix for edges
+    :param i: The subscript to be given to the variable gamma, the varibale would be named to 'gamma_i'
     :return: The QuantumCircuit object corresponding to the cost block
     """
     nq = n * l
-    gamma = Parameter('\u03B3')
+    globals()['gamma%s' % layer] = Parameter('\u03B3' + str(layer))
     cost_circ = QuantumCircuit(nq)
     for n1 in range(n):  # first node
         for n2 in range(n1 + 1, n):  # second node, which is always larger than first node by index to avoid repetition
@@ -43,7 +45,7 @@ def make_cost_block(n, l, w):
                     seq.sort()  # we want to apply cx gates in order
                     for i in range(len(seq) - 1):
                         cost_circ.cx(seq[i], seq[i + 1])  # apply cx gates in ascending order of index
-                    cost_circ.rz(gamma * w[n1][n2] / 2, seq[-1])  # apply the rz gate
+                    cost_circ.rz(globals()['gamma%s' % layer] * w[n1][n2] / 2, seq[-1])  # apply the rz gate
                     for i in range(len(seq) - 1):
                         cost_circ.cx(seq[-(i + 2)], seq[-(i + 1)])  # apply cx gates in descending order of index
                 cost_circ.barrier()
@@ -61,6 +63,29 @@ def powerset(l):
         for element in combinations(l, i):
             res.append(element)
     return res
+
+
+def make_initial_block(n, l):
+    """
+    :param n: The number of nodes
+    :param l: The number of qubits representing a node
+    :return: The QuantumCircuit object corresponding to the initial state
+    """
+    nq = n * l
+    init_circ = QuantumCircuit(nq)
+    for i in range(0, nq):
+        init_circ.h(i)
+    return init_circ
+
+
+def make_full_circuit(n, l, w, p):
+    nq = n * l
+    circ = QuantumCircuit(nq)
+    circ.append(make_initial_block(n, l), [i for i in range(nq)])
+    for layer in range(p):
+        circ.append(make_mixing_block(n, l, layer), [i for i in range(nq)])
+        circ.append(make_cost_block(n, l, w, layer), [i for i in range(nq)])
+    return circ
 
 
 def brut_force_k4_N5(G):
