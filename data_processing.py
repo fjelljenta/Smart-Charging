@@ -22,6 +22,7 @@ def generate_data(num_normal_vehicles, num_important_vehicles):
     # Create vehicles
     for i in range(total_number_of_vehicles):
         vehicles[str(i)] = {}
+        # TODO int weights
         if i < num_normal_vehicles:
             vehicles[str(i)]["weight"] = random.uniform(0.1,5) 
             vehicles[str(i)]["charging_time"] = random.randint(min_charging, max_charging)
@@ -38,7 +39,7 @@ def generate_data(num_normal_vehicles, num_important_vehicles):
             weight = int(min(weight_1, weight_2))
             #print(j,i,weight, weight_1, weight_2)
             G.add_edge(i,j,weight=weight)
-
+    # TODO store graph data (json?)
     return G
 
 def get_weight_matrix(G):
