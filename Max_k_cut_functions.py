@@ -48,7 +48,7 @@ def make_cost_block(n, l, w, layer):
                     cost_circ.rz(globals()['gamma%s' % layer] * w[n1][n2] / 2, seq[-1])  # apply the rz gate
                     for i in range(len(seq) - 1):
                         cost_circ.cx(seq[-(i + 2)], seq[-(i + 1)])  # apply cx gates in descending order of index
-                cost_circ.barrier()
+                #cost_circ.barrier()
     return cost_circ
 
 
@@ -85,8 +85,31 @@ def make_full_circuit(n, l, w, p):
     for layer in range(p):
         circ.append(make_mixing_block(n, l, layer), [i for i in range(nq)])
         circ.append(make_cost_block(n, l, w, layer), [i for i in range(nq)])
+    circ.measure_all()
     return circ
 
+
+def get_expectation(G, p, shots=512):
+    """
+    Runs parametrized circuit
+
+    Args:
+        G: networkx graph
+        p: int,
+           Number of repetitions of unitaries
+    """
+
+    backend = Aer.get_backend('qasm_simulator')
+    backend.shots = shots
+
+    def execute_circ(theta):
+        qc = create_qaoa_circ(G, theta)
+        counts = backend.run(qc, seed_simulator=10,
+                             nshots=512).result().get_counts()
+
+        return compute_expectation(counts, G)
+
+    return execute_circ
 
 def brut_force_k4_N5(G):
     """Classical brut-force solution of the max-k-cut problem of Graph G
