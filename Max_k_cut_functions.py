@@ -111,7 +111,7 @@ def brut_force_k4_N5(G):
     # TODO: at the moment only works if node names correspond to the number (int) of the node
     # jobs=list(G.nodes())
 
-    P_opt = {'P1': [1], 'P2': [], 'P3': [], 'P4': []}
+    P_opt = {'P0': [0], 'P1': [], 'P2': [], 'P3': []}
     C_opt = 0
 
     # PN0=0  # node o is always in Partition 0
