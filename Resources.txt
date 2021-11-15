@@ -15,3 +15,7 @@ Useful resources:
 -Data generation:
 	-https://www.data.gouv.fr/fr/datasets/belib-reseau-parisien-de-bornes-de-recharges-accelerees-22-kw-ac-dc-pour-vehicules-electriques/
 	-https://networkx.org/documentation/stable/tutorial.html
+
+- To check:
+	-https://cstheory.stackexchange.com/questions/4673/whats-the-approximation-factor-of-this-max-k-cut-approximation
+	-https://www.geeksforgeeks.org/maximal-independent-set-in-an-undirected-graph/
