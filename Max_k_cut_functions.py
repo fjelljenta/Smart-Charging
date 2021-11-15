@@ -6,6 +6,7 @@ from itertools import combinations
 
 from data_processing import *
 import numpy as np
+import copy
 
 
 def make_mixing_block(n, l, layer):
@@ -151,6 +152,71 @@ def circuit_optimize_wrapper(circ, l, w, nshots=512, simulator='qasm_simulator')
          return -1 * compute_cost(counts, l, w, nshots)
 
     return func_to_optimize
+
+
+
+
+
+
+
+def Monte_Carlo_solver(G,k):
+    """Classical Monte-carlo solution of the max-k-cut problem of Graph G
+    Args:
+        G (graph): Graph of the max-k-cut problem
+        k (int): Number of cuts (available loading stations)
+    Returns:
+        C_opt (int): cost function of optimal max-k-cut solution
+        P_opt (dict): dictionary with the number of the load station as keys 
+            and array of jobs at a given loading station (still unordered!) as values
+    Method: 
+    """
+    N= G.number_of_nodes()
+    
+    #Initialisation:
+    
+    P_opt= dict()
+    for i in range(k):
+        P_opt['P'+str(i)]=[]
+    
+    for j in range(N):
+        P_opt['P'+str(np.random.randint(k))].append(j)  #maybe change to actual nodes the graph
+        
+    C_opt=cost(G, P_opt) 
+    f=0
+    
+    #Monte-Carlo:
+    while f<100:
+        
+        P=copy.deepcopy(P_opt)
+        P_set_index_t= np.random.randint(k)
+        set_length=len(P['P'+str(P_set_index_t)])
+        if set_length==0:
+            continue
+        Np_index=np.random.randint(set_length)
+        MC_node=P['P'+str(P_set_index_t)].pop(Np_index)
+        P_set_index_g=np.random.randint(k-1)
+        if P_set_index_g==P_set_index_t:
+            P_set_index_g=k-1
+        P['P'+str(P_set_index_g)].append(MC_node)
+        
+        C= cost(G, P) 
+        
+        probability=np.random.random()
+        normalisation=10.0
+        
+        if np.exp((C-C_opt)/normalisation)>probability:
+            f=0
+            P_opt=copy.deepcopy(P)
+            C_opt=C.copy()
+            print('C_opt=',C_opt, '  P_opt=', P_opt, '\n')
+        else:
+            f+=1     
+        
+        
+    return C_opt, P_opt
+
+
+
 
 
 def brut_force(G, k):
