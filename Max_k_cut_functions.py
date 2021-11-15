@@ -1,5 +1,6 @@
-from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from qiskit import Aer, execute
+from qiskit import QuantumCircuit
+from qiskit import Aer
+from qiskit.compiler import transpile
 from qiskit.circuit import Parameter
 from itertools import combinations
 
@@ -89,27 +90,26 @@ def make_full_circuit(n, l, w, p):
     return circ
 
 
-def get_expectation(G, p, shots=512):
-    """
-    Runs parametrized circuit
+def run_circuit(circ, param_list, nshots=512, simulator='qasm_simulator'):
+    circ = circ.bind_parameters(param_list)
+    backend = Aer.get_backend(simulator)
+    transpiled_circ = transpile(circ, backend)
+    counts = backend.run(transpiled_circ, shots=nshots).result().get_counts()
+    n_counts = sum(counts.values())
+    return counts, n_counts, transpiled_circ
 
-    Args:
-        G: networkx graph
-        p: int,
-           Number of repetitions of unitaries
-    """
 
-    backend = Aer.get_backend('qasm_simulator')
-    backend.shots = shots
+def compute_cost(counts, l, w, n_counts=1024):
+    total_cost = 0
+    for measurement, count in counts.items():
+        partition = [int(measurement[i:i + l], 2) for i in range(0, len(measurement), l)]
+        for i in range(len(partition)):
+            for j in range(i, len(partition)):
+                if partition[i] != partition[j]:
+                    total_cost += w[i][j] * count
+    average_cost = total_cost / n_counts
+    return average_cost
 
-    def execute_circ(theta):
-        qc = create_qaoa_circ(G, theta)
-        counts = backend.run(qc, seed_simulator=10,
-                             nshots=512).result().get_counts()
-
-        return compute_expectation(counts, G)
-
-    return execute_circ
 
 def brut_force_k4_N5(G):
     """Classical brut-force solution of the max-k-cut problem of Graph G
