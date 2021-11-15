@@ -113,7 +113,7 @@ def run_circuit(circ, param_list, nshots=512, simulator='qasm_simulator'):
     return counts, transpiled_circ
 
 
-def compute_cost(counts, l, w, n_counts=1024):
+def compute_cost(counts, l, w, n_counts=512):
     """
     :param counts:  dict{measurement result in string:count}
     :param l: The number of qubits representing a node
