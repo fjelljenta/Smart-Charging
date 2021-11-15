@@ -111,8 +111,17 @@ def compute_cost(counts, l, w, n_counts=1024):
     return average_cost
 
 
+def circuit_optimize_wrapper(circ, l, w, nshots=512, simulator='qasm_simulator'):
+    backend = Aer.get_backend(simulator)
+    backend.shots = nshots
 
+    def func_to_optimize(param_list):
+         circ_w_param = circ.bind_parameters(param_list)
+         transpiled_circ = transpile(circ_w_param, backend)
+         counts = backend.run(transpiled_circ, shots=nshots).result().get_counts()
+         return -1 * compute_cost(counts, l, w, nshots)
 
+    return func_to_optimize
 
 
 def brut_force(G, k):
