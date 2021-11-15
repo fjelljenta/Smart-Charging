@@ -80,6 +80,13 @@ def make_initial_block(n, l):
 
 
 def make_full_circuit(n, l, w, p):
+    """
+    :param n: The number of nodes
+    :param l: The number of qubits representing a node
+    :param w: The weight matrix for edges
+    :param p: The number of layers
+    :return: The QuantumCircuit object corresponding to the full circuit
+    """
     nq = n * l
     circ = QuantumCircuit(nq)
     circ.append(make_initial_block(n, l), [i for i in range(nq)])
@@ -91,15 +98,29 @@ def make_full_circuit(n, l, w, p):
 
 
 def run_circuit(circ, param_list, nshots=512, simulator='qasm_simulator'):
+    """
+    :param circ:  The QuantumCircuit object corresponding to the full circuit
+    :param param_list:  A list containing the parameters for the circuit
+    :param nshots:  The number of shots
+    :param simulator:  The simulator
+    :return:  counts = dict{measurement result in string:count},
+              transpiled_circ = The QuantumCircuit object corresponding to the transpiled circuit
+    """
     circ = circ.bind_parameters(param_list)
     backend = Aer.get_backend(simulator)
     transpiled_circ = transpile(circ, backend)
     counts = backend.run(transpiled_circ, shots=nshots).result().get_counts()
-    n_counts = sum(counts.values())
-    return counts, n_counts, transpiled_circ
+    return counts, transpiled_circ
 
 
 def compute_cost(counts, l, w, n_counts=1024):
+    """
+    :param counts:  dict{measurement result in string:count}
+    :param l: The number of qubits representing a node
+    :param w: The weight matrix for edges
+    :param n_counts: The total number of counts
+    :return:  The averaged cost
+    """
     total_cost = 0
     for measurement, count in counts.items():
         partition = [int(measurement[i:i + l], 2) for i in range(0, len(measurement), l)]
@@ -112,6 +133,14 @@ def compute_cost(counts, l, w, n_counts=1024):
 
 
 def circuit_optimize_wrapper(circ, l, w, nshots=512, simulator='qasm_simulator'):
+    """
+    :param circ:  The QuantumCircuit object corresponding to the full circuit, without feeding parameters or transpiling
+    :param l: The number of qubits representing a node
+    :param w: The weight matrix for edges
+    :param nshots:  The number of shots
+    :param simulator:  The simulator
+    :return:  The function to optimize, corresponding to the circuit, to be fed to scipy.optimization.minimize
+    """
     backend = Aer.get_backend(simulator)
     backend.shots = nshots
 
