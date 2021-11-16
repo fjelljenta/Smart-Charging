@@ -247,7 +247,7 @@ def brut_force(G, k):
     time=0
     
     C_opt, P_opt=rec_cost_optimization(G, k, N, N_rec, P_opt, C_opt)
-    print('{}\r'.format('progress '+ str(100,4)+ '%' +'   '), end="")
+    print('{}\r'.format('progress '+ str(100)+ '%' +'   '), end="") 
     
     return C_opt, P_opt
 
