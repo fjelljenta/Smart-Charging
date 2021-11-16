@@ -20,3 +20,4 @@ Useful resources:
 	-https://cstheory.stackexchange.com/questions/4673/whats-the-approximation-factor-of-this-max-k-cut-approximation
 	-https://www.geeksforgeeks.org/maximal-independent-set-in-an-undirected-graph/
 	-https://drops.dagstuhl.de/opus/volltexte/2018/8309/pdf/OASIcs-SOSA-2018-13.pdf
+	-Test
