@@ -3,10 +3,12 @@ from qiskit import Aer
 from qiskit.compiler import transpile
 from qiskit.circuit import Parameter
 from itertools import combinations
+import datetime as dt
 
 from scipy.optimize import differential_evolution, minimize
 from data_processing import *
 import numpy as np
+import copy
 
 
 def make_mixing_block(n, l, layer):
@@ -34,7 +36,6 @@ def make_cost_block(n, l, w, layer):
     """
     nq = n * l
     globals()['gamma%s' % layer] = Parameter('\u03B3' + str(layer))
-    #globals()['a%s' % layer] = Parameter('a' + str(layer))
     cost_circ = QuantumCircuit(nq)
     for n1 in range(n):  # first node
         for n2 in range(n1 + 1, n):  # second node, which is always larger than first node by index to avoid repetition
@@ -49,7 +50,6 @@ def make_cost_block(n, l, w, layer):
                     for i in range(len(seq) - 1):
                         cost_circ.cx(seq[i], seq[i + 1])  # apply cx gates in ascending order of index
                     cost_circ.rz(globals()['gamma%s' % layer] * w[n1][n2] / 2, seq[-1])  # apply the rz gate
-                    #cost_circ.rz(globals()['a%s' % layer] * w[n1][n2] / 2, seq[-1])  # apply the rz gate
                     for i in range(len(seq) - 1):
                         cost_circ.cx(seq[-(i + 2)], seq[-(i + 1)])  # apply cx gates in descending order of index
                 #cost_circ.barrier()
@@ -271,6 +271,71 @@ def full_optimization_loop(n, l, w, p, bounds=[(-np.pi, np.pi), (0, 4*np.pi)], n
     return param_history, cost_history, circ_history
 
 
+
+
+
+
+
+def Monte_Carlo_solver(G,k):
+    """Classical Monte-carlo solution of the max-k-cut problem of Graph G
+    Args:
+        G (graph): Graph of the max-k-cut problem
+        k (int): Number of cuts (available loading stations)
+    Returns:
+        C_opt (int): cost function of optimal max-k-cut solution
+        P_opt (dict): dictionary with the number of the load station as keys
+            and array of jobs at a given loading station (still unordered!) as values
+    Method:
+    """
+    N= G.number_of_nodes()
+
+    #Initialisation:
+
+    P_opt= dict()
+    for i in range(k):
+        P_opt['P'+str(i)]=[]
+
+    for j in range(N):
+        P_opt['P'+str(np.random.randint(k))].append(j)  #maybe change to actual nodes the graph
+
+    C_opt=cost(G, P_opt)
+    f=0
+
+    #Monte-Carlo:
+    while f<100:
+
+        P=copy.deepcopy(P_opt)
+        P_set_index_t= np.random.randint(k)
+        set_length=len(P['P'+str(P_set_index_t)])
+        if set_length==0:
+            continue
+        Np_index=np.random.randint(set_length)
+        MC_node=P['P'+str(P_set_index_t)].pop(Np_index)
+        P_set_index_g=np.random.randint(k-1)
+        if P_set_index_g==P_set_index_t:
+            P_set_index_g=k-1
+        P['P'+str(P_set_index_g)].append(MC_node)
+
+        C= cost(G, P)
+
+        probability=np.random.random()
+        normalisation=10.0
+
+        if np.exp((C-C_opt)/normalisation)>probability:
+            f=0
+            P_opt=copy.deepcopy(P)
+            C_opt=C.copy()
+            print('C_opt=',C_opt, '  P_opt=', P_opt, '\n')
+        else:
+            f+=1
+
+
+    return C_opt, P_opt
+
+
+
+
+
 def brut_force(G, k):
     """Classical brut-force solution of the max-k-cut problem of Graph G
     Args:
@@ -298,7 +363,7 @@ def brut_force(G, k):
     time=0
     
     C_opt, P_opt=rec_cost_optimization(G, k, N, N_rec, P_opt, C_opt)
-    print('{}\r'.format('progress '+ str(np.round(1/k**(N-7)*time*100,4))+ '%' +'   '), end="")
+    print('{}\r'.format('progress '+ str(100)+ '%' +'   '), end="")
     
     return C_opt, P_opt
 
@@ -410,3 +475,10 @@ def rec_cost_optimization(G, k, N, N_rec, P_opt, C_opt):
             P_opt = P_try.copy()
             C_opt = C_try
     return C_opt, P_opt
+
+def benchmarking(function, *args):
+    start = dt.datetime.now()
+    result = function(*args)
+    stop = dt.datetime.now()
+    passed_time = stop-start
+    return result, passed_time
