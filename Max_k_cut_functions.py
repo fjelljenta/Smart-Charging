@@ -3,6 +3,7 @@ from qiskit import Aer
 from qiskit.compiler import transpile
 from qiskit.circuit import Parameter
 from itertools import combinations
+import datetime as dt
 
 from data_processing import *
 import numpy as np
@@ -246,7 +247,7 @@ def brut_force(G, k):
     time=0
     
     C_opt, P_opt=rec_cost_optimization(G, k, N, N_rec, P_opt, C_opt)
-    print('{}\r'.format('progress '+ str(100,4))+ '%' +'   '), end="")
+    print('{}\r'.format('progress '+ str(100,4)+ '%' +'   '), end="")
     
     return C_opt, P_opt
 
@@ -358,3 +359,10 @@ def rec_cost_optimization(G, k, N, N_rec, P_opt, C_opt):
             P_opt = P_try.copy()
             C_opt = C_try
     return C_opt, P_opt
+
+def benchmarking(function, *args):
+    start = dt.datetime.now()
+    result = function(*args)
+    stop = dt.datetime.now()
+    passed_time = stop-start
+    return result, passed_time

@@ -2,14 +2,17 @@ import networkx as nx
 import random
 import matplotlib.pyplot as plt
 import numpy as np
+import datetime as dt
+import json
 
 
-def generate_data(num_normal_vehicles, num_important_vehicles):
+def generate_data(num_normal_vehicles, num_important_vehicles, store=False):
     """Generate vehicle data. Use a number of normal and important vehicles to create a fully connected graph
 
     Args:
         num_normal_vehicles (int): Number of normal vehicles
         num_important_vehicles (int): Number of priorized vehicles
+        store (Boolean): True to store the values in a file with timestamp
 
     Returns:
         nx.Graph: Returns a fully connected graph with the random assigned weights
@@ -44,11 +47,44 @@ def generate_data(num_normal_vehicles, num_important_vehicles):
             weight = int(min(weight_1, weight_2))
             #print(j,i,weight, weight_1, weight_2)
             G.add_edge(i, j, weight=weight)
-    # TODO store graph data (json?)
+    if store:
+        vehicles["total_number_of_vehicles"] = total_number_of_vehicles
+        vehicles["num_normal_vehicles"] = num_normal_vehicles
+        vehicles["num_important_vehicles"] = num_important_vehicles
+        filename = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d_%H-%M")
+        with open("created_data/"+filename+".json", "wb") as f:
+            f.write(json.dumps(vehicles).encode("utf-8"))
     return G
 
 
-def generate_data_mis(number_of_groups, number_of_vehicles, max_time, max_charging_time=360):
+def generate_data_from_file(filename):
+    """Load data from file and convert them into a graph
+
+    Args:
+        filename (str): Filename
+
+    Returns:
+        nx.Graph: returns a fully connected graph
+    """
+    with open("created_data/"+filename, "rb") as f:
+        vehicles = json.loads(f.read().decode("utf-8"))
+    total_number_of_vehicles = vehicles["total_number_of_vehicles"]
+    num_important_vehicles = vehicles["num_important_vehicles"]
+    num_normal_vehicles = vehicles["num_normal_vehicles"]
+    G = nx.complete_graph(total_number_of_vehicles)
+    for i in range(total_number_of_vehicles):
+        for j in range(i):
+            weight_1 = round(vehicles[str(i)]["weight"]
+                             * vehicles[str(j)]["charging_time"], 2)
+            weight_2 = round(
+                vehicles[str(i)]["charging_time"]*vehicles[str(j)]["weight"], 2)
+            weight = int(min(weight_1, weight_2))
+            #print(j,i,weight, weight_1, weight_2)
+            G.add_edge(i, j, weight=weight)
+    return G
+
+
+def generate_data_mis(number_of_groups, number_of_vehicles, max_time, max_charging_time=360, store=False):
     """Generate data for the MIS. Specify the numbers of groups, the numbers of vehicles, the maximum time scale and the maximum charing time.
 
     Args:
@@ -56,6 +92,10 @@ def generate_data_mis(number_of_groups, number_of_vehicles, max_time, max_chargi
         number_of_vehicles (int): Number of vehicles
         max_time (int): Start time charging limit (say, after 100 minutes, every car started at least charging)
         max_charging_time (int): maximum time a car can charge (like 6h)
+        store (Boolean): True to store values in a file with timestamp
+
+    Returns:
+        nx.Graph: Connected graph with the rules, regarding timing overlap or group dependency
     """
     G = nx.Graph()
     vehicles = {}
@@ -68,6 +108,7 @@ def generate_data_mis(number_of_groups, number_of_vehicles, max_time, max_chargi
             i)]["start_charging"], max_charging_time+vehicles[str(i)]["start_charging"])
 
     G.add_nodes_from(range(number_of_vehicles))
+
     for i in range(number_of_vehicles):
         for j in range(i):
             added_flag = False
@@ -85,8 +126,31 @@ def generate_data_mis(number_of_groups, number_of_vehicles, max_time, max_chargi
                     pass
 
     G.add_edges_from(edge_list)
-    print(vehicles)
-    print(edge_list)
+    # print(vehicles)
+    # print(edge_list)
+    if store:
+        vehicles["number_of_vehicles"] = number_of_vehicles
+        vehicles["number_of_groups"] = number_of_groups
+        vehicles["max_time"] = max_time
+        vehicles["max_charging_time"] = max_charging_time
+        vehicles["edge_list"] = edge_list
+        filename = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d_%H-%M")
+        with open("created_data/"+filename+"_mis.json", "wb") as f:
+            f.write(json.dumps(vehicles).encode("utf-8"))
+    return G
+
+
+def generate_data_mis_from_file(filename):
+    with open("created_data/"+filename, "rb") as f:
+        vehicles = json.loads(f.read().decode("utf-8"))
+    number_of_vehicles = vehicles["number_of_vehicles"]
+    number_of_groups = vehicles["number_of_groups"]
+    max_time = vehicles["max_time"]
+    max_charging_time = vehicles["max_charging_time"]
+    edge_list = vehicles["edge_list"]
+    G = nx.Graph()
+    G.add_nodes_from(range(number_of_vehicles))
+    G.add_edges_from(edge_list)
     return G
 
 

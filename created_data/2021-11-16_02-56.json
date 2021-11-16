@@ -1,0 +1,25 @@
+{
+    "0": {
+        "weight": 3.6049142759307937,
+        "charging_time": 171
+    },
+    "1": {
+        "weight": 4.873417124208414,
+        "charging_time": 245
+    },
+    "2": {
+        "weight": 2.0588117392775196,
+        "charging_time": 41
+    },
+    "3": {
+        "weight": 8.155373143994346,
+        "charging_time": 104
+    },
+    "4": {
+        "weight": 8.523526971437725,
+        "charging_time": 32
+    },
+    "total_number_of_vehicles": 5,
+    "num_normal_vehicles": 3,
+    "num_important_vehicles": 2
+}
