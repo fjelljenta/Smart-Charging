@@ -107,6 +107,15 @@ def get_weight_matrix(G):
     return np.array(matrix)
 
 
+def compute_normalization_scale(w):
+    """
+    a function to compute the normalization factor for the weight matrix given by the paper, R = max(w)*N^2/4
+    :param w:  the original weight matrix
+    :return:  the rescaled weight matrix
+    """
+    return np.max(w) * len(w)**2 / 4
+
+
 if __name__ == "__main__":
     G = generate_data(3, 2)
     pos = nx.spring_layout(G)
