@@ -354,7 +354,7 @@ def convert(o):
     return o.item()  
 
 
-def general_benchmark_for_N(N, p_array=[3], repititions=5, k_array=[5]):
+def general_benchmark_for_N(N, p_array=[3], repititions=5, k_array=[4]):
     """ general benchmark for a given number of nodes and different qaoa-depths, number of cuts and repititions.
         All created data is saved in json files in the 'create_data' folder
     Args:
