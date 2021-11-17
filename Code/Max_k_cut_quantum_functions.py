@@ -215,6 +215,17 @@ def full_optimization_loop(n, l, w, p, bounds=[(-np.pi, np.pi), (0, 4*np.pi)], n
 
 
 def qaoa_run(G, l, p, local_optimization_method='Powell', nshots=512):
+    """runs the qaoa algorithm for a given Graph and depth
+    Args:
+        G (graph): Graph of the max-k-cut problem
+        l (int): Number of qubits per node
+        p (int): qaoa depth
+        local_optimization_method : method for the optimization in the qaoa loop
+        nshots (int): number of repitions of each experiment on the quantum device
+    Returns:
+        distribution (dict): dictionary with partitions and number of couts from the qaoa
+        param_history: development of qaoa circuit parameters beta and gamma
+    """
     n = G.number_of_nodes()
     k = l ** 2
 
@@ -232,7 +243,19 @@ def qaoa_run(G, l, p, local_optimization_method='Powell', nshots=512):
 
 
 
-def qaoa_solver(G, k, p):
+def qaoa_solver(G, k, p, print_plot=False):
+    """complete run of the qaoa with optimal cost and partition as return
+    Args:
+        G (graph): Graph of the max-k-cut problem
+        k (int): cuts of the max-k-cut problem
+        p (int): qaoa depth
+        print_plot (bool): decide whether the distribution diagramm should be printed
+    Returns:
+        C_opt_qaoa (int): cost of optimal qaoa max-k-cut solution
+        P_opt_qaoa (dict): partition of optimal qaoa max-k-cut solution
+        distribution (dict): dictionary with partitions and number of couts from the qaoa
+        param_history: development of qaoa circuit parameters beta and gamma
+    """
     l = np.log2(k)
     if l != int(l):
         print('Error: Qaoa only works if k=l**2 with integer-valued l')
@@ -240,9 +263,10 @@ def qaoa_solver(G, k, p):
     else:
         l = int(l)
 
-    distribution_qaoa, param_history = qaoa_run(G, l, p, local_optimization_method='Nelder-Mead')
-
-    plot_distribution_diagramm(G, distribution_qaoa)  # Plot to check
+    distribution_qaoa, param_history = qaoa_run(G, l, p, local_optimization_method='Powell')
+    
+    if print_plot:
+        plot_distribution_diagramm(G, distribution_qaoa)  
 
     highest_counts = qaoa_highest_counts(distribution_qaoa, 10)
 
@@ -253,5 +277,6 @@ def qaoa_solver(G, k, p):
         if C > C_opt_qaoa:
             C_opt_qaoa = C
             P_opt_qaoa = P.copy()
-
+            
+    print('C_opt_qaoa=', C_opt_qaoa, '  P_opt_qaoa=', P_opt_qaoa)
     return C_opt_qaoa, P_opt_qaoa, distribution_qaoa, param_history
