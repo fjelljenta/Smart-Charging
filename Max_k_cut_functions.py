@@ -15,7 +15,7 @@ def make_mixing_block(n, l, layer):
     """
     :param n: The number of nodes
     :param l: The number of qubits representing a node
-    :param i: The subscript to be given to the variable beta, the varibale would be named to 'beta_i'
+    :param layer: The subscript to be given to the variable beta, the variable would be named to 'beta_layer'
     :return: The QuantumCircuit object corresponding to the mixing block
     """
     nq = n * l
@@ -31,7 +31,7 @@ def make_cost_block(n, l, w, layer):
     :param n: The number of nodes
     :param l: The number of qubits representing a node
     :param w: The weight matrix for edges
-    :param i: The subscript to be given to the variable gamma, the variable would be named to 'gamma_i'
+    :param layer: The subscript to be given to the variable gamma, the variable would be named to 'gamma_layer'
     :return: The QuantumCircuit object corresponding to the cost block
     """
     nq = n * l
