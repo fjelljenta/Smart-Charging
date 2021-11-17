@@ -1,4 +1,5 @@
 from Max_k_cut_functions import *
+from itertools import combinations
 
 
 def make_cost_block_MIS(n, layer):
@@ -55,3 +56,48 @@ def make_full_circuit_MIS(n, w, p):
         circ.append(make_mixing_block_MIS(n, w, layer), [i for i in range(n)])
     circ.measure_all()
     return circ
+
+
+def compute_cost_MIS(counts, w, U, n_counts=512):
+    """
+    :param counts:  dict{measurement result in string:count}
+    :param l: The number of qubits representing a node
+    :param w: The adjacency matrix for edges
+    :param U: The size of punishment added to the cost due to including nodes of the same group in the MIS
+    :return:  The averaged cost
+    """
+    total_cost = 0
+    for measurement, count in counts.items():
+        preprocessed_chosen_set = np.argwhere(np.array(list(measurement))=='1')
+        if len(preprocessed_chosen_set) == 0:
+            continue
+        chosen_set = np.concatenate(preprocessed_chosen_set)
+        total_cost += -1 * len(chosen_set) * count
+        if len(chosen_set) < 2:
+            continue
+        else:
+            for edge in combinations(chosen_set, 2):
+                if w[edge[0]][edge[1]] == 1:
+                    total_cost += U * count
+    average_cost = total_cost / n_counts
+    return average_cost
+
+
+def func_to_optimize_wrapper_MIS(circ, w, U, nshots=512, simulator='qasm_simulator'):
+    """
+    :param circ:  The QuantumCircuit object corresponding to the full circuit, without feeding parameters or transpiling
+    :param w: The adjacency matrix for edges
+    :param nshots:  The number of shots
+    :param simulator:  The simulator
+    :return:  The function to optimize, corresponding to the circuit, to be fed to scipy.optimization.minimize
+    """
+    backend = Aer.get_backend(simulator)
+    backend.shots = nshots
+
+    def func_to_optimize(param_list):
+         circ_w_param = circ.bind_parameters(param_list)
+         transpiled_circ = transpile(circ_w_param, backend)
+         counts = backend.run(transpiled_circ, shots=nshots).result().get_counts()
+         return compute_cost(counts, w, U, nshots)
+
+    return func_to_optimize
