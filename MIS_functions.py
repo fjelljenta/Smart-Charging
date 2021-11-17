@@ -1,4 +1,4 @@
-from Max_k_cut_functions import *
+from Max_k_cut_quantum_functions import *
 
 
 def make_cost_block_MIS(n, layer):
