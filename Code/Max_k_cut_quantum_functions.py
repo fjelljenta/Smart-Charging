@@ -244,7 +244,7 @@ def qaoa_solver(G, k, p):
 
     distribution_qaoa = qaoa_run(G, l, p, local_optimization_method='Nelder-Mead')
 
-    plot_distribution_diagramm(distribution_qaoa)  # Plot to check
+    plot_distribution_diagramm(G, distribution_qaoa)  # Plot to check
 
     highest_counts = qaoa_highest_counts(distribution_qaoa, 10)
 
