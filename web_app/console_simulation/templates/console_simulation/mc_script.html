@@ -22,9 +22,13 @@
 
 
   // Number of jobs
-  let n=25;
+  let n=5;
 
   let portQueues = [[],[],[],[]];
+
+  function main() {
+
+  }
 
   document.addEventListener("DOMContentLoaded", ()=>{
     fetch('{% url 'init_mc_jobs' %}', {
@@ -48,74 +52,81 @@
           vehicleEl.dataset.index=i+1;
           vehicleEl.innerHTML="<h5>Vehicle "+(i+1).toString()+"</h5>";
           vehicleEl.innerHTML+="<p>Importance: "+vehicle.importance+"<br>Charging Time: "+vehicle.charging_time+"</p>";
-          vehicleEl.innerHTML+='<progress class="vehicle-'+(i+1).toString()+'-charge" value="100" max="100">100</progress><hr>';
+          // vehicleEl.innerHTML+='<progress class="vehicle-'+(i+1).toString()+'-charge" value="100" max="100">100</progress><hr>';
+          let charge=Math.round(100*Math.random())
+          vehicleEl.innerHTML+=`
+          <div class="progress vehicle-${(i+1).toString()}-charge">
+            <div class="progress-bar" role="progressbar" style="width: ${charge}%;">${charge}</div>
+          </div><br>`;
           document.querySelector('.vehicles').appendChild(vehicleEl);
         });
-      });
 
-    let jobs=[];
+        let jobs=[];
 
-    setInterval(()=>{
-      let vehicleElArray=document.querySelectorAll('.vehicle');
-      for (var i = 0; i < 4; i++) {
-        if (portQueues[i].length>0) {
-          document.querySelector(".vehicle-"+portQueues[i][0]["index"]).classList.add('charging');
-          document.querySelector(".vehicle-"+portQueues[i][0]["index"]).dataset.port=i+1;
-          document.querySelector(".port-"+(i+1).toString()).querySelector(".active-vehicle").innerHTML="Vehicle "+(portQueues[i][0]["index"]).toString()+" charging...";
-        }
-      }
-      vehicleElArray.forEach((vehicleEl, i) => {
-        if (!(vehicleEl.classList.contains('charging'))) {
-          let charge=vehicleEl.querySelector('progress').value;
-          charge-=100.0/(vehicleEl.dataset.chargingTime*100*(9+2*Math.random())); // hypothetical vehicles take around 10 times as long
-          // to lose charge as they do to recharge fully
-          vehicleEl.querySelector('progress').value=Math.max(0, charge);
-          vehicleEl.querySelector('progress').innerHTML=Math.max(0, charge);
-          if (vehicleEl.querySelector('progress').value<=80) {
-            if (!vehicleEl.classList.contains('charging-queue')) {
-              jobs.push({"index": vehicleEl.dataset.index, "importance": vehicleEl.dataset.importance, "charging_time": vehicleEl.dataset.chargingTime})
-              vehicleEl.classList.add('charging-queue');
-            }
-          }
-        }
-        else {
-          let charge=vehicleEl.querySelector('progress').value;
-          charge+=100.0/(vehicleEl.dataset.chargingTime*100);
-          vehicleEl.querySelector('progress').value=Math.min(100, charge);
-          vehicleEl.querySelector('progress').innerHTML=Math.min(100, charge);
-          if (vehicleEl.querySelector('progress').value==100) {
-            vehicleEl.classList.remove('charging');
-            vehicleEl.classList.remove('charging-queue');
-            document.querySelector(".port-"+(vehicleEl.dataset.port).toString()).querySelector(".active-vehicle").innerHTML="<i>Idle</i>";
-            portQueues[vehicleEl.dataset.port-1].shift();
-            vehicleEl.dataset.port=0;
-          }
-        }
-      });
-    }, 10);
-
-    var processingJobSet;
-
-    setInterval(()=>{
-      processingJobSet=jobs;
-      for (var i = 0; i < processingJobSet.length; i++) {
-        processingJobSet[i]["charging_time"]*=1-(document.querySelector(".vehicle-"+processingJobSet[i]["index"]).querySelector('progress').value/100.0)
-      }
-      fetch('{% url 'get_maxcut' %}', {
-        method: 'post',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          "X-CSRFToken": getCookie('csrftoken')
-        },
-        body: JSON.stringify({"jobs": processingJobSet})
-      }).then(res => res.json())
-      .then((res) => {
-        jobs.splice(0, res["p0"].length+res["p1"].length+res["p2"].length+res["p3"].length);
+        let vehicleElArray=document.querySelectorAll('.vehicle');
+        console.log(vehicleElArray);
         for (var i = 0; i < 4; i++) {
-          (portQueues[i]).push(...(res["p"+(i).toString()]));
+          if (portQueues[i].length>0) {
+            document.querySelector(".vehicle-"+portQueues[i][0]["index"]).classList.add('charging');
+            document.querySelector(".vehicle-"+portQueues[i][0]["index"]).dataset.port=i+1;
+            document.querySelector(".port-"+(i+1).toString()).querySelector(".active-vehicle").innerHTML="Vehicle "+(portQueues[i][0]["index"]).toString()+" charging...";
+          }
         }
+        vehicleElArray.forEach((vehicleEl, i) => {
+          jobs.push({"index": vehicleEl.dataset.index, "importance": vehicleEl.dataset.importance, "charging_time": vehicleEl.dataset.chargingTime});
+          vehicleEl.classList.add('charging-queue');
+        });
+
+        console.log(jobs);
+
+        setTimeout(()=>{
+          for (var i = 0; i < jobs.length; i++) {
+            jobs[i]["charging_time"]*=1-(parseFloat(document.querySelector(".vehicle-"+jobs[i]["index"]).querySelector('.progress-bar').innerHTML)/100.0)
+          }
+          fetch('{% url 'get_maxcut' %}', {
+            method: 'post',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              "X-CSRFToken": getCookie('csrftoken')
+            },
+            body: JSON.stringify({"jobs": jobs})
+          }).then(res => res.json())
+          .then((res) => {
+            jobs=[]
+            for (var i = 0; i < 4; i++) {
+              (portQueues[i]).push(...(res["p"+(i).toString()]));
+              var interval = setInterval(()=>{
+                let vehicleElArray=document.querySelectorAll('.vehicle');
+                for (var i = 0; i < 4; i++) {
+                  if (portQueues[i].length>0) {
+                    document.querySelector(".vehicle-"+portQueues[i][0]["index"]).classList.add('charging');
+                    document.querySelector(".vehicle-"+portQueues[i][0]["index"]).dataset.port=i+1;
+                    document.querySelector(".port-"+(i+1).toString()).querySelector(".active-vehicle").innerHTML="Vehicle "+(portQueues[i][0]["index"]).toString()+" charging...";
+                  }
+                }
+                vehicleElArray.forEach((vehicleEl, i) => {
+                  if (vehicleEl.classList.contains('charging')) {
+                    let charge=parseFloat(vehicleEl.querySelector('.progress-bar').innerHTML);
+                    charge+=100.0/(vehicleEl.dataset.chargingTime*5);
+                    vehicleEl.querySelector('.progress-bar').style.width=(Math.min(100, charge)).toString()+"%";
+                    vehicleEl.querySelector('.progress-bar').innerHTML=Math.round(100*Math.min(100, charge))/100.0;
+
+                    if (parseFloat(vehicleEl.querySelector('.progress-bar').innerHTML)==100) {
+                      vehicleEl.classList.remove('charging');
+                      vehicleEl.classList.remove('charging-queue');
+                      document.querySelector(".port-"+(vehicleEl.dataset.port).toString()).querySelector(".active-vehicle").innerHTML="<i>Idle</i>";
+                      portQueues[vehicleEl.dataset.port-1].shift();
+                      vehicleEl.dataset.port=0;
+                    }
+                  }
+                });
+              }, 500);
+
+            }
+          });
+        }, 1000);
       });
-    }, 5000);
+
   });
 </script>

@@ -23,10 +23,13 @@
 const zeroPad = (num, places) => String(num).padStart(places, '0')
 
   document.addEventListener("DOMContentLoaded", ()=>{
-    n=[]
-    for (var i = 0; i < 6; i++) {
-      n[i]=Math.floor(Math.random()*4)+1;
+    let n=[]
+    let count=0
+    for (var i = 0; i < 3; i++) {
+      n[i]=Math.floor(Math.random()*(10-count-(3-i)))+1;
+      count+=n[i]
     }
+    n[3]=10-count;
     fetch('{% url 'init_mis_jobs' %}', {
       method: 'post',
       headers: {

@@ -77,7 +77,7 @@ a, .btn-link {
   overflow-y: scroll;
 }
 
-@media only screen and (min-width: 768px) {
+@media (min-width: 768px) {
   .vehicles {
     width: 50vw;
   }
@@ -92,7 +92,7 @@ a, .btn-link {
   }
 }
 
-progress {
+/* progress {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearence: none;
@@ -112,4 +112,8 @@ progress {
   -o-transition : width 5s ease;
   transition : width 5s ease;
   background-color: #6929c4;
+} */
+
+.progress-bar {
+  background-color: #6929c4 !important;
 }
