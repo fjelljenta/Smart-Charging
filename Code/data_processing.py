@@ -6,7 +6,7 @@ import datetime as dt
 import json
 
 
-def generate_data(num_normal_vehicles, num_important_vehicles, store=False):
+def generate_data(num_normal_vehicles, num_important_vehicles, store=False, filename=dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d_%H-%M")):
     """Generate vehicle data. Use a number of normal and important vehicles to create a fully connected graph
 
     Args:
@@ -26,7 +26,7 @@ def generate_data(num_normal_vehicles, num_important_vehicles, store=False):
     # Create vehicles
     for i in range(total_number_of_vehicles):
         vehicles[str(i)] = {}
-        # TODO int weights
+        # int weights?
         if i < num_normal_vehicles:
             vehicles[str(i)]["weight"] = random.uniform(0.1, 5)
             vehicles[str(i)]["charging_time"] = random.randint(
@@ -51,7 +51,6 @@ def generate_data(num_normal_vehicles, num_important_vehicles, store=False):
         vehicles["total_number_of_vehicles"] = total_number_of_vehicles
         vehicles["num_normal_vehicles"] = num_normal_vehicles
         vehicles["num_important_vehicles"] = num_important_vehicles
-        filename = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d_%H-%M")
         with open("created_data/"+filename+".json", "wb") as f:
             f.write(json.dumps(vehicles).encode("utf-8"))
     return G
@@ -84,7 +83,7 @@ def generate_data_from_file(filename):
     return G
 
 
-def generate_data_mis(number_of_groups, number_of_vehicles, max_time, max_charging_time=360, store=False):
+def generate_data_mis(number_of_groups, number_of_vehicles, max_time, max_charging_time=360, store=False, filename=dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d_%H-%M")):
     """Generate data for the MIS. Specify the numbers of groups, the numbers of vehicles, the maximum time scale and the maximum charing time.
 
     Args:
@@ -134,7 +133,6 @@ def generate_data_mis(number_of_groups, number_of_vehicles, max_time, max_chargi
         vehicles["max_time"] = max_time
         vehicles["max_charging_time"] = max_charging_time
         vehicles["edge_list"] = edge_list
-        filename = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d_%H-%M")
         with open("created_data/"+filename+"_mis.json", "wb") as f:
             f.write(json.dumps(vehicles).encode("utf-8"))
     return G

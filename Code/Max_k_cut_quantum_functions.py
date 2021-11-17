@@ -192,7 +192,7 @@ def full_optimization_loop(n, l, w, p, bounds=[(-np.pi, np.pi), (0, 4*np.pi)], n
         param_history.append(complete_param)
         cost_history.append(cost)
     ####################################################################################################################
-    # Run the local optimization of choice for ith iteration if neededs
+    # Run the local optimization of choice for ith iteration if needed
         if local_optimization_method is not None:
             func_to_optimize = func_to_optimize_wrapper(circ, l, w, nshots=nshots, simulator=simulator)
             result = minimize(func_to_optimize, complete_param, method=local_optimization_method)
@@ -228,7 +228,7 @@ def qaoa_run(G, l, p, local_optimization_method='Powell', nshots=512):
     circ = make_full_circuit(n, l, rescaled_weights, p)
     counts, transpiled_circ = run_circuit(circ, param_history[-1], nshots=nshots)
 
-    return show_distribution(counts, l)
+    return show_distribution(counts, l), param_history
 
 
 
@@ -240,7 +240,7 @@ def qaoa_solver(G, k, p):
     else:
         l = int(l)
 
-    distribution_qaoa = qaoa_run(G, l, p, local_optimization_method='Nelder-Mead')
+    distribution_qaoa, param_history = qaoa_run(G, l, p, local_optimization_method='Nelder-Mead')
 
     plot_distribution_diagramm(G, distribution_qaoa)  # Plot to check
 
@@ -254,4 +254,4 @@ def qaoa_solver(G, k, p):
             C_opt_qaoa = C
             P_opt_qaoa = P.copy()
 
-    return C_opt_qaoa, P_opt_qaoa
+    return C_opt_qaoa, P_opt_qaoa, distribution_qaoa, param_history
