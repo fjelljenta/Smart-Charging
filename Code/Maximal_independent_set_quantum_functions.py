@@ -171,7 +171,7 @@ def full_optimization_loop_MIS(n, w, U, p, bounds=[(-np.pi, np.pi), (0, 4*np.pi)
         param_history.append(complete_param)
         cost_history.append(cost)
     ####################################################################################################################
-    # Run the local optimization of choice for ith iteration if neededs
+    # Run the local optimization of choice for ith iteration if needed
         if local_optimization_method is not None:
             func_to_optimize = func_to_optimize_wrapper_MIS(circ_w_param, w, U, nshots=nshots, simulator=simulator)
             result = minimize(func_to_optimize, complete_param, method=local_optimization_method)

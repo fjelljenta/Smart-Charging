@@ -192,7 +192,7 @@ def full_optimization_loop(n, l, w, p, bounds=[(-np.pi, np.pi), (0, 4*np.pi)], n
         param_history.append(complete_param)
         cost_history.append(cost)
     ####################################################################################################################
-    # Run the local optimization of choice for ith iteration if neededs
+    # Run the local optimization of choice for ith iteration if needed
         if local_optimization_method is not None:
             func_to_optimize = func_to_optimize_wrapper(circ, l, w, nshots=nshots, simulator=simulator)
             result = minimize(func_to_optimize, complete_param, method=local_optimization_method)
