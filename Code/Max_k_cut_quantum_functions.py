@@ -153,7 +153,7 @@ def full_optimization_loop(n, l, w, p, bounds=[(-np.pi, np.pi), (0, 4*np.pi)], n
     # Run the educated global guess (EGG) optimization for the first time
     circ = make_full_circuit(n, l, w, 1)
     circ_history.append(circ)
-    func_to_optimize = func_to_optimize_wrapper(circ, l, w)
+    func_to_optimize = func_to_optimize_wrapper(circ, l, w, nshots=nshots, simulator=simulator)
     result = differential_evolution(func_to_optimize, bounds)
     param, cost = result.x, -1 * result.fun
     print('1st params', param)
@@ -182,7 +182,7 @@ def full_optimization_loop(n, l, w, p, bounds=[(-np.pi, np.pi), (0, 4*np.pi)], n
             param_bind_dict[param_names[j + i]] = param_prev[j + i - 1]
         circ_w_param = circ.bind_parameters(param_bind_dict)
         circ_history.append(circ_w_param)
-        func_to_optimize = func_to_optimize_wrapper(circ_w_param, l, w)
+        func_to_optimize = func_to_optimize_wrapper(circ_w_param, l, w, nshots=nshots, simulator=simulator)
         result = differential_evolution(func_to_optimize, bounds)
         param, cost = result.x, -1 * result.fun
         complete_param = np.concatenate((param_prev[:i-1], np.array([param[0]]),
@@ -194,7 +194,7 @@ def full_optimization_loop(n, l, w, p, bounds=[(-np.pi, np.pi), (0, 4*np.pi)], n
     ####################################################################################################################
     # Run the local optimization of choice for ith iteration if neededs
         if local_optimization_method is not None:
-            func_to_optimize = func_to_optimize_wrapper(circ, l, w)
+            func_to_optimize = func_to_optimize_wrapper(circ, l, w, nshots=nshots, simulator=simulator)
             result = minimize(func_to_optimize, complete_param, method=local_optimization_method)
             param, cost = result.x, -1 * result.fun
             print(str(i) + abbrev + ' iteration (' + local_optimization_method + '), params', param)
