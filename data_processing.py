@@ -180,6 +180,10 @@ def compute_normalization_scale(w):
     return np.max(w) * len(w)**2 / 4
 
 
+def get_adjacency_matrix(G):
+    return np.array(nx.adjacency_matrix(G).todense())
+
+
 if __name__ == "__main__":
     G = generate_data(3, 2)
     pos = nx.spring_layout(G)
