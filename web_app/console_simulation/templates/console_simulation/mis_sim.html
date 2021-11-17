@@ -1,0 +1,120 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>EV Charging Console</title>
+    <link rel="stylesheet" href="{% static 'console_simulation/master.css' %}">
+    {% include "console_simulation/mis_script.html" %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+  <body>
+    <a class="back-btn" href="{% url 'index' %}">Back to menu</a>
+    <br>
+    <div class="mis-container">
+      <br>
+      <div class="left">
+        <div class="companies" id="accordion">
+          <div class="card company" id="company-a">
+            <div class="card-header" id="headingOne">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                  Company A
+                </button>
+              </h5>
+            </div>
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+              <div class="card-body jobs jobs-0" data-company="A">
+              </div>
+            </div>
+          </div>
+          <div class="card company" id="company-b">
+            <div class="card-header" id="headingTwo">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                  Company B
+                </button>
+              </h5>
+            </div>
+            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+              <div class="card-body jobs jobs-1" data-company="B">
+              </div>
+            </div>
+          </div>
+          <div class="card company" id="company-c">
+            <div class="card-header" id="headingThree">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                  Company C
+                </button>
+              </h5>
+            </div>
+            <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+              <div class="card-body jobs jobs-2" data-company="C">
+              </div>
+            </div>
+          </div>
+          <div class="card company" id="company-d">
+            <div class="card-header" id="headingFour">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                  Company D
+                </button>
+              </h5>
+            </div>
+
+            <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+              <div class="card-body jobs jobs-3" data-company="D">
+
+              </div>
+            </div>
+          </div>
+          <div class="card company" id="company-e">
+            <div class="card-header" id="headingFive">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                  Company E
+                </button>
+              </h5>
+            </div>
+            <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordion">
+              <div class="card-body jobs jobs-4" data-company="E">
+              </div>
+            </div>
+          </div>
+          <div class="card company" id="company-f">
+            <div class="card-header" id="headingSix">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                  Company F
+                </button>
+              </h5>
+            </div>
+            <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordion">
+              <div class="card-body jobs jobs-5" data-company="F">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="info">
+          <h4>What is this?</h4>
+          <p>The situation is as follows: We are monitoring a charging park owned by the companies listed. Each company has time intervals during which they'd like access to the park (randomly generated data).
+          We have to select no more than one job from each company such that no two jobs have overlapping time intervals, with our goal being to include as many companies as possible. Here, this is implemented using a quantum algorithm simulated classically. Click <a href="https://github.com/fjelljenta/Smart-Charging" target="_blank">here</a> to learn more.</p>
+        </div>
+        <br>
+        <div class="result">
+          <h4>Selection:</h4>
+          <div class="selection">
+            Quantum Algorithm Running...
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>

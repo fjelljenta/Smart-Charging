@@ -1,0 +1,81 @@
+<script type="text/javascript">
+
+
+  //  Cookies for CSRF
+
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+
+const zeroPad = (num, places) => String(num).padStart(places, '0')
+
+  document.addEventListener("DOMContentLoaded", ()=>{
+    n=[]
+    for (var i = 0; i < 6; i++) {
+      n[i]=Math.floor(Math.random()*4)+1;
+    }
+    fetch('{% url 'init_mis_jobs' %}', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        "X-CSRFToken": getCookie('csrftoken')
+      },
+      body: JSON.stringify({"n": n})
+    }).then(res => res.json())
+      .then((res) => {
+
+        let companies=document.querySelectorAll(".company");
+
+        companies.forEach((company, i) => {
+          let jobs=res[company.id]
+          for (var j = 0; j < jobs.length; j++) {
+            company.querySelector(".jobs").innerHTML+=`
+              <div class="job" id='job-${company.querySelector(".jobs").dataset.company+(j+1).toString()}'>
+                <h5>Job ${company.querySelector(".jobs").dataset.company+(j+1).toString()}</h5>
+                <p>
+                  <b>Start Time:</b> ${Math.floor(jobs[j]["start_time"])}:${zeroPad(Math.floor((jobs[j]["start_time"]-Math.floor(jobs[j]["start_time"]))*60),2)}
+                  <br>
+                  <b>End Time:</b> ${Math.floor(jobs[j]["start_time"]+jobs[j]["duration"])}:${zeroPad(Math.floor(((jobs[j]["start_time"]+jobs[j]["duration"])-Math.floor(jobs[j]["start_time"]+jobs[j]["duration"]))*60),2)}
+                </p>
+              </div>`;
+          }
+        });
+
+        fetch('{% url 'get_mis' %}', {
+          method: 'post',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            "X-CSRFToken": getCookie('csrftoken')
+          },
+          body: JSON.stringify(res)
+        }).then(result => result.json())
+        .then((result) => {
+          let mis=result["mis"];
+          document.querySelector(".selection").innerHTML="";
+          for (var i = 0; i < mis.length; i++) {
+            console.log(mis[i]);
+            let selectedJob=document.getElementById(mis[i]).cloneNode(true);
+            selectedJob.id+="-selected";
+            document.querySelector(".selection").appendChild(selectedJob);
+          }
+
+        });
+
+      });
+  });
+</script>

@@ -1,0 +1,115 @@
+body {
+  background-color: #333 !important;
+  color: white !important;
+}
+
+.card {
+  background-color: #444 !important;
+}
+
+a, .btn-link {
+  color: #b979f4 !important;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: center;
+}
+
+.back-btn {
+  margin: 20px;
+  position: absolute;
+}
+
+.menu-btn {
+  position: relative;
+  margin: 10px;
+  padding: 10px;
+  border: solid #ccc 1px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-container {
+  margin: 20px;
+  text-align: center;
+}
+
+.mc-container, .mis-container {
+  margin: 20px;
+  margin-top: 30px;
+  display: flex;
+  flex-flow: column-reverse;
+}
+
+.left, .right {
+  margin: 20px;
+}
+
+.left {
+  margin-left: 5px;
+}
+
+.vehicles {
+  height: 80vh;
+  padding: 20px;
+  width: 80vw;
+  overflow-y: scroll;
+}
+
+.selection {
+  height: 40vh;
+  padding: 20px;
+  /* width: calc(40vw - 100px); */
+  overflow-y: auto;
+}
+
+.info {
+  height: 30vh;
+  overflow-y: auto;
+}
+
+.companies {
+  height: 80vh;
+  padding: 20px;
+  width: 80vw;
+  overflow-y: scroll;
+}
+
+@media only screen and (min-width: 768px) {
+  .vehicles {
+    width: 50vw;
+  }
+  .mc-container, .mis-container {
+    flex-flow: row;
+  }
+  .companies {
+    width: 60vw;
+  }
+  .selection {
+    width: calc(40vw - 100px);
+  }
+}
+
+progress {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearence: none;
+}
+
+::-webkit-progress-value {
+    -webkit-transition : width 5s ease;
+    -moz-transition : width 5s ease;
+    -o-transition : width 5s ease;
+    transition : width 5s ease;
+    background-color: #6929c4;
+}
+
+::-moz-progress-bar {
+  -webkit-transition : width 5s ease;
+  -moz-transition : width 5s ease;
+  -o-transition : width 5s ease;
+  transition : width 5s ease;
+  background-color: #6929c4;
+}
