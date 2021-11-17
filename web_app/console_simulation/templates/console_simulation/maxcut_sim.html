@@ -1,0 +1,44 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>EV Charging Console</title>
+    <link rel="stylesheet" href="{% static 'console_simulation/master.css' %}">
+    {% include "console_simulation/mc_script.html" %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  </head>
+  <body>
+    <a class="back-btn" href="{% url 'index' %}">Back to menu</a>
+    <br>
+    <div class="mc-container">
+      <div class="left">
+        <div class="vehicles card">
+        </div>
+      </div>
+      <div class="right">
+        <div class="info">
+          <h4>What is this?</h4>
+          <p>The listed vehicles are those that are in the vicinity of a charging station with 4 charging ports. Each vehicle has its own charging time and 'importance'.
+            An ambulance for example has a higher 'importance' than a regular car. Every 5 seconds, this webpage takes all the vehicles with less than 80% charge and tries to find
+          an ideal way to assign them different charging ports. The way this distribution is found is by using a quantum algorithm simulated classically. Click <a href="https://github.com/fjelljenta/Smart-Charging" target="_blank">here</a> to learn more.</p>
+        </div>
+        <br>
+        <div class="charging-ports">
+          {% with ''|center:4 as range %}
+          {% for _ in range %}
+          <div class="port port-{{ forloop.counter }}">
+            <h5>Charging Port {{ forloop.counter }}</h5>
+            <p class="active-vehicle"><i>Idle</i></p>
+          </div>
+          {% endfor %}
+          {% endwith %}
+        </div>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  </body>
+</html>
