@@ -228,7 +228,7 @@ def qaoa_run(G, l, p, local_optimization_method='Powell', nshots=512):
     circ = make_full_circuit(n, l, rescaled_weights, p)
     counts, transpiled_circ = run_circuit(circ, param_history[-1], nshots=nshots)
 
-    return show_distribution(counts, l)
+    return show_distribution(counts, l), param_history
 
 
 
@@ -240,7 +240,7 @@ def qaoa_solver(G, k, p):
     else:
         l = int(l)
 
-    distribution_qaoa = qaoa_run(G, l, p, local_optimization_method='Nelder-Mead')
+    distribution_qaoa, param_history = qaoa_run(G, l, p, local_optimization_method='Nelder-Mead')
 
     plot_distribution_diagramm(G, distribution_qaoa)  # Plot to check
 
@@ -254,4 +254,4 @@ def qaoa_solver(G, k, p):
             C_opt_qaoa = C
             P_opt_qaoa = P.copy()
 
-    return C_opt_qaoa, P_opt_qaoa
+    return C_opt_qaoa, P_opt_qaoa, distribution_qaoa, param_history
