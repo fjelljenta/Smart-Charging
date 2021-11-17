@@ -284,7 +284,7 @@ def str_array_into_dict(P_str_array):
 
 
 
-def plot_distribution_diagramm(distribution_qaoa):
+def plot_distribution_diagramm(G, distribution_qaoa):
     count_list_qaoa = [[], []]
     for key, value in distribution_qaoa.items():
         P = str_array_into_dict(key)
