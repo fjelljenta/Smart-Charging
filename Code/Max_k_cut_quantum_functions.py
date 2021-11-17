@@ -1,12 +1,10 @@
 from Code.Max_k_cut_classical_functions import *
-
+from Code.data_processing import *
 from qiskit import QuantumCircuit
 from qiskit import Aer
 from qiskit.compiler import transpile
 from qiskit.circuit import Parameter
-
 from scipy.optimize import differential_evolution, minimize
-from Code.data_processing import *
 import numpy as np
 
 

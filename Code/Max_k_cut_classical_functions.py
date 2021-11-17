@@ -1,8 +1,6 @@
-from Max_k_cut_quantum_functions import *
-
-from itertools import combinations
-
+from Code.Max_k_cut_quantum_functions import *
 from Code.data_processing import *
+from itertools import combinations
 import numpy as np
 import copy
 import ast

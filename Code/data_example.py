@@ -1,6 +1,6 @@
 from data_processing import generate_data, generate_data_from_file, generate_data_mis, generate_data_mis_from_file
 from networkx.algorithms.approximation import one_exchange, randomized_partitioning
-from Max_k_cut_quantum_functions import *
+from Code.Max_k_cut_quantum_functions import *
 import networkx as nx
 import matplotlib.pyplot as plt
 
