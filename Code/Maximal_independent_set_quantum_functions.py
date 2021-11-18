@@ -67,7 +67,7 @@ def compute_cost_MIS(counts, w, U, n_counts=512):
     """
     total_cost = 0
     for measurement, count in counts.items():
-        preprocessed_chosen_set = (len(measurement)-1)-np.argwhere(np.array(list(measurement))=='1')
+        preprocessed_chosen_set = np.argwhere(np.array(list(measurement))=='1')
         if len(preprocessed_chosen_set) == 0:
             continue
         chosen_set = np.concatenate(preprocessed_chosen_set)
