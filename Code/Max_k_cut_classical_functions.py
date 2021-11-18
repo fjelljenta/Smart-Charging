@@ -378,7 +378,7 @@ def general_benchmark_for_N(N, p_array=[3], repititions=5, k_array=[4]):
                 data_name = "data_"+filename
             
                 G = generate_data(n_unimp, n_imp, True, graph_name)
-                C_opt_qaoa, P_opt_qaoa, distribution_qaoa, param_history = qaoa_solver(G,k,p)   #change in a way that parameter and distribution_qaoa are returned as well
+                C_opt_qaoa, P_opt_qaoa, distribution_qaoa, param_history = qaoa_solver(G,k,p)  
                 C_opt_mc, P_opt_mc =Monte_Carlo_solver(G,k)
                 C_opt, P_opt=brut_force(G,k)
             
@@ -408,10 +408,11 @@ def general_benchmark_for_N(N, p_array=[3], repititions=5, k_array=[4]):
 
 
 
-def qaoa_benchmark_plot_data_N(qaoa_benchmark_dict):
+def qaoa_benchmark_plot_data_N(qaoa_benchmark_dict, repetition=5):
     """ computes approximation ratios for given optimal solutions of qaoa and monte-carlo
     Args:
-        qaoa_benchmark_dict (dict): dictionary containing optimal partitions and costs computed by qaoa, monte carlo and brute-force                          
+        qaoa_benchmark_dict (dict): dictionary containing optimal partitions and costs computed by qaoa, monte carlo and brute-force   
+        repetition (int) : number of repetitions for one set of parameters
     Returns:
         return p_values (array): array containing quoa depths p
         approximation_ratio_qaoa (array): approximation ratios of qaoa for different depths p
@@ -432,7 +433,8 @@ def qaoa_benchmark_plot_data_N(qaoa_benchmark_dict):
             approximation_mc += 100*C_mc/(1.0*C_opt)
         
         p_values.append(key[0])# look if 0 or 1    
-        approximation_ratio_qaoa.append(approximation_qaoa/5.0)
-        approximation_ratio_mc.append(approximation_mc/5.0)
+        approximation_ratio_qaoa.append(approximation_qaoa/(1.0*repetition))
+        approximation_ratio_mc.append(approximation_mc/(1.0*repetition))
     
     return p_values, approximation_ratio_qaoa, approximation_ratio_mc
+
