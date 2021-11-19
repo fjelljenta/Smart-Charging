@@ -67,6 +67,7 @@ def compute_cost_MIS(counts, w, U, n_counts=512):
     """
     total_cost = 0
     for measurement, count in counts.items():
+        measurement=measurement[::-1]
         preprocessed_chosen_set = np.argwhere(np.array(list(measurement))=='1')
         if len(preprocessed_chosen_set) == 0:
             continue
@@ -191,58 +192,57 @@ def full_optimization_loop_MIS(n, w, U, p, bounds=[(-np.pi, np.pi), (0, 4*np.pi)
 
 
 def graphSets(graph):
-      
-    # Base Case - Given Graph 
+
+    # Base Case - Given Graph
     # has no nodes
     if(len(graph) == 0):
         g = nx.Graph()
         return g
-     
+
     # Base Case - Given Graph
     # has 1 node
     if(len(graph) == 1):
         g = nx.Graph()
         g.add_node(list(graph)[0])
         return g
-      
+
     # Select a vertex from the graph
     vCurrent = list(graph)[0]
-      
+
     # Case 1 - Proceed removing
     # the selected vertex
     # from the Maximal Set
     graph2 = graph.copy()
-      
-    # Delete current vertex 
+
+    # Delete current vertex
     # from the Graph
     graph2.remove_node(vCurrent)
-      
-    # Recursive call - Gets 
+
+    # Recursive call - Gets
     # Maximal Set,
-    # assuming current Vertex 
+    # assuming current Vertex
     # not selected
     res1 = graphSets(graph2)
-      
+
     # Case 2 - Proceed considering
     # the selected vertex as part
     # of the Maximal Set
     # Loop through its neighbours
     for v in list(graph.neighbors(vCurrent)):
-          
-        # Delete neighbor from 
+
+        # Delete neighbor from
         # the current subgraph
         if(v in graph2):
             graph2.remove_node(v)
-      
+
     # This result set contains VFirst,
     # and the result of recursive
     # call assuming neighbors of vFirst
     # are not selected
     res2 = graphSets(graph2)
     res2.add_node(vCurrent)
-    # Our final result is the one 
+    # Our final result is the one
     # which is bigger, return it
     if(len(res1) > len(res2)):
         return res1
     return res2
-  

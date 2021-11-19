@@ -31,6 +31,7 @@ def compute_cost(counts, l, w, n_counts=512):
     """
     total_cost = 0
     for measurement, count in counts.items():
+        measurement=measurement[::-1]
         partition = [int(measurement[i:i + l], 2) for i in range(0, len(measurement), l)]
         for i in range(len(partition)):
             for j in range(i, len(partition)):
@@ -119,7 +120,7 @@ def Monte_Carlo_solver(G, k, print_progress=False):
                 print('C_opt=', C_opt, '  P_opt=', P_opt)
         else:
             f += 1
-            
+
     print('C_opt_ms=', C_opt, '  P_opt_ms=', P_opt)
     return C_opt, P_opt
 
@@ -154,7 +155,7 @@ def brut_force(G, k, print_progress=False):
     C_opt, P_opt = rec_cost_optimization(G, k, N, N_rec, P_opt, C_opt)
     if print_progress:
         print('{}\r'.format('progress ' + str(100) + '%' + '   '), end="")
-    
+
     print('C_opt=', C_opt, '  P_opt=', P_opt)
     return C_opt, P_opt
 
@@ -295,7 +296,7 @@ def str_array_into_dict(P_str_array):
     P_dict = {}
     participation_data = ast.literal_eval(P_str_array)
     P_len = len(participation_data)
-    for i in range(P_len): 
+    for i in range(P_len):
         P_dict["P" + str(i)] = participation_data[i]
     return P_dict
 
@@ -304,8 +305,8 @@ def str_array_into_dict(P_str_array):
 def plot_distribution_diagramm(G, distribution_qaoa):
     """bar plot of the cost of a given partition on the x-axis and the number of counts during the qaoa at the y-axis
     Args:
-        G (graph): Graph the partitions of the distribution_qaoa belong to 
-        distribution_qaoa (dict): dictionary with partitions as keys and corresponding 
+        G (graph): Graph the partitions of the distribution_qaoa belong to
+        distribution_qaoa (dict): dictionary with partitions as keys and corresponding
                                    number of counts of these partitions during the qaoa
     Returns:
     """
@@ -324,11 +325,11 @@ def plot_distribution_diagramm(G, distribution_qaoa):
 def qaoa_highest_counts(distribution_qaoa, number_highest_counts):
     """ filters for the Partitions with the highest number of counts during the qaoa
     Args:
-        distribution_qaoa (dict): dictionary with partitions as keys and corresponding 
+        distribution_qaoa (dict): dictionary with partitions as keys and corresponding
                                    number of counts of these partitions during the qaoa
-        number_highest_counts (int): number of partitions with the highest counts that should be filtered                            
+        number_highest_counts (int): number of partitions with the highest counts that should be filtered
     Returns:
-        highest_distr_qaoa (dict): distribution_qaoa in with only the 'number_highest_counts' many partitions 
+        highest_distr_qaoa (dict): distribution_qaoa in with only the 'number_highest_counts' many partitions
                                    with the highest counts are kept
     """
     count_list = list(distribution_qaoa.values())
@@ -347,11 +348,11 @@ def qaoa_highest_counts(distribution_qaoa, number_highest_counts):
 def convert(o):
     """ convertion needed for writing in json files
     Args:
-        o: argument to be converted                          
+        o: argument to be converted
     Returns:
         converts to format compatible with json
     """
-    return o.item()  
+    return o.item()
 
 
 def general_benchmark_for_N(N, p_array=[3], repititions=5, k_array=[4]):
@@ -363,32 +364,32 @@ def general_benchmark_for_N(N, p_array=[3], repititions=5, k_array=[4]):
         repititions (int): number of repititions for a given combination of N,p and k
         k_array (array): number of cuts which should be done in the max-k-cut
     Returns:
-        qaoa_benchmark_dict (dict): dictionary with str(p)+str(N) as keys and arrays of data sets with optimal cost and 
+        qaoa_benchmark_dict (dict): dictionary with str(p)+str(N) as keys and arrays of data sets with optimal cost and
                                     optimal partition for qaoa, monte-carlo and brute force for each repitition as values
     """
     qaoa_benchmark_dict={}
-    for k in k_array: 
+    for k in k_array:
         for p in p_array:
             for rep in range(repititions):
-                n_imp = np.random.randint(N+1) 
+                n_imp = np.random.randint(N+1)
                 n_unimp = N-n_imp
-            
+
                 filename = "p_"+str(p)+"_N_"+str(N)+"_repetiton_"+str(rep)
                 graph_name = "graph_"+filename
                 data_name = "data_"+filename
-            
+
                 G = generate_data(n_unimp, n_imp, True, graph_name)
-                C_opt_qaoa, P_opt_qaoa, distribution_qaoa, param_history = qaoa_solver(G,k,p)  
+                C_opt_qaoa, P_opt_qaoa, distribution_qaoa, param_history = qaoa_solver(G,k,p)
                 C_opt_mc, P_opt_mc =Monte_Carlo_solver(G,k)
                 C_opt, P_opt=brut_force(G,k)
-            
+
                 key=str(p)+str(N)
                 if rep==0:
                     qaoa_benchmark_dict[key]=[[C_opt_qaoa, P_opt_qaoa, C_opt_mc, P_opt_mc, C_opt, P_opt]]
                 else:
                     qaoa_benchmark_dict[key].append([C_opt_qaoa, P_opt_qaoa, C_opt_mc, P_opt_mc, C_opt, P_opt])
-                         
-            
+
+
                 with open("created_data/"+data_name+".json", "wb") as f:
                     all_data = {}
                     all_data["n_imp"] = n_imp
@@ -403,15 +404,15 @@ def general_benchmark_for_N(N, p_array=[3], repititions=5, k_array=[4]):
                     #all_data["param_history"] = param_history
 
                     f.write(json.dumps(all_data, default=convert).encode("utf-8"))
-    
-    return qaoa_benchmark_dict  
+
+    return qaoa_benchmark_dict
 
 
 
 def qaoa_benchmark_plot_data_N(qaoa_benchmark_dict, repetition=5):
     """ computes approximation ratios for given optimal solutions of qaoa and monte-carlo
     Args:
-        qaoa_benchmark_dict (dict): dictionary containing optimal partitions and costs computed by qaoa, monte carlo and brute-force   
+        qaoa_benchmark_dict (dict): dictionary containing optimal partitions and costs computed by qaoa, monte carlo and brute-force
         repetition (int) : number of repetitions for one set of parameters
     Returns:
         return p_values (array): array containing quoa depths p
@@ -422,7 +423,7 @@ def qaoa_benchmark_plot_data_N(qaoa_benchmark_dict, repetition=5):
     approximation_ratio_qaoa=[]
     approximation_ratio_mc=[]
 
-    for key, value in qaoa_benchmark_dict.items():   
+    for key, value in qaoa_benchmark_dict.items():
         approximation_qaoa=0
         approximation_mc=0
         for repitition in value:
@@ -431,10 +432,9 @@ def qaoa_benchmark_plot_data_N(qaoa_benchmark_dict, repetition=5):
             C_opt=repitition[4]
             approximation_qaoa += 100*C_qaoa/(1.0*C_opt)
             approximation_mc += 100*C_mc/(1.0*C_opt)
-        
-        p_values.append(key[0])# look if 0 or 1    
+
+        p_values.append(key[0])# look if 0 or 1
         approximation_ratio_qaoa.append(approximation_qaoa/(1.0*repetition))
         approximation_ratio_mc.append(approximation_mc/(1.0*repetition))
-    
-    return p_values, approximation_ratio_qaoa, approximation_ratio_mc
 
+    return p_values, approximation_ratio_qaoa, approximation_ratio_mc
